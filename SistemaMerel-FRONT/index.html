@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>SistemaMerel</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    input, button { margin: 0.5rem; padding: 0.5rem; }
+    .producto { margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>SistemaMerel</h1>
+
+  <h2>Agregar producto</h2>
+  <form id="producto-form">
+    <input type="text" id="nombre" placeholder="Nombre" required />
+    <input type="text" id="descripcion" placeholder="Descripción" />
+    <input type="number" id="precio" placeholder="Precio" required />
+    <input type="number" id="stock" placeholder="Stock" required />
+    <button type="submit">Agregar</button>
+  </form>
+
+  <h2>Productos existentes</h2>
+  <div id="lista-productos"></div>
+
+  <script>
+    const apiURL = 'http://localhost:3000/api/productos';
+    const user = localStorage.getItem('usuario');
+      if (!user) {
+      window.location.href = 'login.html';
+}
+
+
+    async function cargarProductos() {
+      const res = await fetch(apiURL);
+      const productos = await res.json();
+
+      const lista = document.getElementById('lista-productos');
+      lista.innerHTML = '';
+      productos.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'producto';
+        div.textContent = `${p.nombre} - $${p.precio} (${p.stock} unidades)`;
+        lista.appendChild(div);
+      });
+    }
+
+    document.getElementById('producto-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        nombre: document.getElementById('nombre').value,
+        descripcion: document.getElementById('descripcion').value,
+        precio: parseFloat(document.getElementById('precio').value),
+        stock: parseInt(document.getElementById('stock').value),
+      };
+
+      const res = await fetch(apiURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        alert('✅ Producto agregado correctamente');
+        e.target.reset();
+        cargarProductos();
+      } else {
+        alert('❌ Error al agregar producto');
+      }
+    });
+
+    cargarProductos();
+  </script>
+</body>
+</html>

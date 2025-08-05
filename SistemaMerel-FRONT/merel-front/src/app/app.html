@@ -1,0 +1,14 @@
+<h2>Login</h2>
+
+<div *ngIf="!usuario">
+  <input type="text" [(ngModel)]="email" placeholder="Email">
+  <input type="password" [(ngModel)]="contrasena" placeholder="Contraseña">
+  <button (click)="login()">Iniciar sesión</button>
+</div>
+
+<div *ngIf="usuario">
+  <p>Bienvenido, {{ usuario.email }}</p>
+  <button (click)="logout()">Cerrar sesión</button>
+</div>
+
+<p>{{ mensaje }}</p>
